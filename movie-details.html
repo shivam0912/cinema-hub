@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Movie Details</title>
+
+    <style>
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+        background-color: #85a389;
+      }
+
+      .card {
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(255, 255, 255, 0.378);
+        
+        overflow: hidden;
+        max-width: 450px;
+
+        width: 100%;
+      }
+      .card h3{
+        font-size: 2rem;
+        color: #88b78e;
+        margin-top: 20px;
+        margin-left: 10px;
+      }
+
+      .card img {
+        max-width: 100%;
+        height: auto;
+        margin-bottom: 10px;
+      }
+
+      .card p {
+        margin: 25px;
+        font-size: 1rem;
+
+      }
+    </style>
+  </head>
+  <body>
+    <div id="movie-details"></div>
+
+    <script>
+      const IMGPATH = "https://image.tmdb.org/t/p/w1280";
+      const main = document.getElementById("movie-details");
+
+      // Code for movie-details.html page
+      if (window.location.href.includes("movie-details.html")) {
+        const movieId = new URLSearchParams(
+          window.location.search.substring(1)
+        ).get("id");
+
+        if (movieId) {
+          getMovieDetails(movieId);
+        } else {
+          console.log("Movie ID not found");
+        }
+      }
+
+      async function getMovieDetails(movieId) {
+        try {
+          const url = `https://api.themoviedb.org/3/movie/${movieId}?api_key=04c35731a5ee918f014970082a0088b1`;
+          const resp = await fetch(url);
+          const movieData = await resp.json();
+          console.log(movieData);
+
+          showMovieDetails(movieData);
+        } catch (error) {
+          console.log("Error:", error);
+        }
+      }
+
+      function showMovieDetails(movieData) {
+        const { backdrop_path,title, overview,poster_path,release_date } = movieData;
+        
+        if(!backdrop_path){
+            backdrop_path = poster_path;
+            console.log(backdrop_path)
+        }
+        const movieElem = document.createElement("div");
+        movieElem.classList.add("card");
+        const titleElem = document.createElement("h3");
+        titleElem.textContent = title;
+        movieElem.appendChild(titleElem)
+
+        const releaseDate = document.createElement("p");
+        releaseDate.textContent = release_date;
+        movieElem.appendChild(releaseDate);
+
+        const posterImg = document.createElement("img");
+        posterImg.src = IMGPATH + backdrop_path;
+        movieElem.appendChild(posterImg);
+
+        const overviewElem = document.createElement("p");
+        overviewElem.textContent = overview;
+        movieElem.appendChild(overviewElem);
+
+        main.appendChild(movieElem);
+      }
+    </script>
+  </body>
+</html>
